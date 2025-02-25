@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { VersioningType } from '@nestjs/common';
+import { RequestMethod, VersioningType } from '@nestjs/common';
 import { join } from 'node:path';
 import * as hbs from 'hbs';
 import * as hbsUtils from 'hbs-utils';
@@ -14,9 +14,8 @@ async function bootstrap() {
   });
 
   //-- set global prefix
-  app.setGlobalPrefix('api');
   app.setGlobalPrefix('api', {
-    exclude: ['logger'],
+    exclude: [{ path: 'logger(.*)', method: RequestMethod.ALL }],
   });
 
   //-- set render loggers

@@ -5,6 +5,7 @@ import {
   utilities as nestWinstonModuleUtilities,
 } from 'nest-winston';
 import { Injectable, LoggerService } from '@nestjs/common';
+import { DateTz } from '../commons/helpers/DateTz';
 
 export interface ILoggerOptions {
   action: string;
@@ -20,6 +21,10 @@ export class LoggerFactory implements LoggerService {
   constructor() {
     const appName = 'logger';
     const DEBUG = process.env.DEBUG;
+
+    const pathFilename = (level: string, appName: string) => {
+      return `logs/log_%DATE%/${level}-${appName}.log`;
+    };
 
     const consoleFormat = format.combine(
       format.timestamp(),
@@ -38,7 +43,7 @@ export class LoggerFactory implements LoggerService {
         }),
         new transports.DailyRotateFile({
           level: 'info',
-          filename: `logs/info-${appName}-%DATE%.log`,
+          filename: pathFilename('info', appName),
           datePattern: 'YYYY-MM-DD',
           zippedArchive: true,
           maxSize: '20m',
@@ -46,7 +51,7 @@ export class LoggerFactory implements LoggerService {
         }),
         new transports.DailyRotateFile({
           level: 'error',
-          filename: `logs/error-${appName}-%DATE%.log`,
+          filename: pathFilename('error', appName),
           datePattern: 'YYYY-MM-DD',
           zippedArchive: true,
           maxSize: '20m',
@@ -54,7 +59,7 @@ export class LoggerFactory implements LoggerService {
         }),
         new transports.DailyRotateFile({
           level: 'debug',
-          filename: `logs/debug-${appName}-%DATE%.log`,
+          filename: pathFilename('debug', appName),
           datePattern: 'YYYY-MM-DD',
           zippedArchive: true,
           maxSize: '20m',
@@ -116,7 +121,7 @@ export class LoggerFactory implements LoggerService {
       method: this.loggerGlobal?.method,
       url: this.loggerGlobal?.url,
       action: action,
-      timestamp: new Date(),
+      timestamp: DateTz.getDateNow('YYYY-MM-DD HH:mm:ss'),
       message,
     };
   }
