@@ -1,23 +1,24 @@
-import { Controller, Get, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Controller, Get, Param, Res, UseGuards } from '@nestjs/common';
 import { LoggerService } from './logger.service';
+import { LoggerGuard } from './logger.guard';
 
 @Controller('logger')
 export class LoggerController {
   constructor(private loggerService: LoggerService) {}
 
   @Get()
-  home(@Res() res: Response) {
-    return res.render('home', {
-      message: 'Hello world!',
-    });
+  @UseGuards(LoggerGuard)
+  async getList() {
+    return await this.loggerService.getLists();
   }
 
-  @Get('logs')
-  async logs(@Res() res: Response) {
-    await this.loggerService.getLogs();
-    return res.render('logs', {
-      message: 'Hello world!',
-    });
+  @Get('detail/:path')
+  @UseGuards(LoggerGuard)
+  async logs(@Param('path') path: string) {
+    const logs = await this.loggerService.getLogs(path);
+    return {
+      path,
+      logs,
+    };
   }
 }

@@ -7,12 +7,6 @@ import {
 import { Injectable, LoggerService } from '@nestjs/common';
 import { DateTz } from '../commons/helpers/DateTz';
 
-export interface ILoggerOptions {
-  action: string;
-  sessionId?: string;
-  trace?: string;
-}
-
 @Injectable()
 export class LoggerFactory implements LoggerService {
   private logger: LoggerService;

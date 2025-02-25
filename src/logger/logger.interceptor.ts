@@ -22,6 +22,10 @@ export class LoggingInterceptor implements NestInterceptor {
     const { method, url } = req;
     const sessionId = v4();
 
+    if (new RegExp('logger/').test(url)) {
+      return next.handle();
+    }
+
     global.loggerGlobal = {
       sessionId,
       ip,
